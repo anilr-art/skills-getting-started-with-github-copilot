@@ -46,5 +46,52 @@
     </footer>
 
     <script src="app.js"></script>
+    <script>
+      // Helper to create participant list HTML
+      function createParticipantsList(participants) {
+        if (!participants || participants.length === 0) {
+          return '<ul class="participants-list empty"><li>No participants yet.</li></ul>';
+        }
+        return `<ul class="participants-list">
+          ${participants.map(email => `<li>${email}</li>`).join('')}
+        </ul>`;
+      }
+
+      // Fetch and render activities
+      fetch('/activities')
+        .then(res => res.json())
+        .then(data => {
+          const activitiesList = document.getElementById('activities-list');
+          activitiesList.innerHTML = '';
+          const activitySelect = document.getElementById('activity');
+          activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
+
+          Object.entries(data).forEach(([name, info]) => {
+            // Activity card
+            const card = document.createElement('div');
+            card.className = 'activity-card';
+
+            card.innerHTML = `
+              <h4>${name}</h4>
+              <p><strong>Description:</strong> ${info.description}</p>
+              <p><strong>Schedule:</strong> ${info.schedule}</p>
+              <p><strong>Max Participants:</strong> ${info.max_participants}</p>
+              <div class="participants-section">
+                <span class="participants-title">Participants:</span>
+                ${createParticipantsList(info.participants)}
+              </div>
+            `;
+            activitiesList.appendChild(card);
+
+            // Add to select
+            const option = document.createElement('option');
+            option.value = name;
+            option.textContent = name;
+            activitySelect.appendChild(option);
+          });
+        });
+
+      // ...existing code...
+    </script>
   </body>
 </html>

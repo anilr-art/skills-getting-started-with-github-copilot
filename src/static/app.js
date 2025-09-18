@@ -4,6 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  // Helper to create participant list HTML
+  function createParticipantsList(participants) {
+    if (!participants || participants.length === 0) {
+      return '<ul class="participants-list empty"><li>No participants yet.</li></ul>';
+    }
+    return `<ul class="participants-list">
+      ${participants.map(email => `<li>${email}</li>`).join('')}
+    </ul>`;
+  }
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -12,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Clear loading message
       activitiesList.innerHTML = "";
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -22,9 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
-          <p>${details.description}</p>
+          <p><strong>Description:</strong> ${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <div class="participants-section">
+            <span class="participants-title">Participants:</span>
+            ${createParticipantsList(details.participants)}
+          </div>
         `;
 
         activitiesList.appendChild(activityCard);
